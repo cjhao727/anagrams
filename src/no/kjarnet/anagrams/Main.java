@@ -17,15 +17,19 @@ public class Main {
     private static final String FILE_NAME = "ordbok.txt";
 
     public static void main(String[] args) {
-        System.out.println("Hello World!");
         Path path = Paths.get(FILE_NAME);
         try(Stream<String> lines = Files.lines(path, Charset.forName(FILE_CHARSET))){
             Map<String, List<String>> groupedBySortedChars = lines.collect(Collectors.groupingBy(Main::getSortedChars));
-            groupedBySortedChars.entrySet().stream().filter(e -> e.getValue().size() > 1).forEach(
-                    e -> System.out.println(String.join(",", e.getValue())));
+            List<String> joinedStrings = getJoinOfMultipleStrings(groupedBySortedChars);
+            joinedStrings.stream().forEach(System.out::println);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    static List<String> getJoinOfMultipleStrings(Map<String, List<String>> groupedStrings) {
+        return groupedStrings.entrySet().stream().filter(e -> e.getValue().size() > 1)
+                .map(e -> String.join(",", e.getValue())).collect(Collectors.toList());
     }
 
     static String getSortedChars(String word) {
